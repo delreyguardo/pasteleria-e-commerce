@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { dbService } from "../services/dbService";
+import { dbService, CUSTOMIZATION_OPTIONS, getCustomizationPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
 import { useApp } from "../context/AppContext";
 import { ArrowLeft, Check, ShoppingCart, Info, Award } from "lucide-react";
@@ -15,13 +15,6 @@ export const ProductDetail: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [customizations, setCustomizations] = useState<string[]>([]);
   const [successMsg, setSuccessMsg] = useState(false);
-
-  // Available customizations
-  const CUSTOMIZATION_OPTIONS = [
-    { id: "extra-caramel", name: "Caramelo extra casero", price: 1.50 },
-    { id: "chantilly", name: "Porción de crema chantilly", price: 2.00 },
-    { id: "gift-box", name: "Caja de regalo decorada", price: 3.00 },
-  ];
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -67,14 +60,7 @@ export const ProductDetail: React.FC = () => {
     );
   };
 
-  const getCustomizationPrice = () => {
-    return customizations.reduce((total, name) => {
-      const option = CUSTOMIZATION_OPTIONS.find(o => o.name === name);
-      return total + (option ? option.price : 0);
-    }, 0);
-  };
-
-  const currentPrice = product.price + getCustomizationPrice();
+  const currentPrice = product.price + getCustomizationPrice(customizations);
 
   const handleAddToCart = () => {
     addToCart(product, selectedSize, customizations);

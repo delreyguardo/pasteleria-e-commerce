@@ -47,6 +47,25 @@ export interface Order {
   notes?: string;
 }
 
+export interface CustomizationOption {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export const CUSTOMIZATION_OPTIONS: CustomizationOption[] = [
+  { id: "extra-caramel", name: "Caramelo extra casero", price: 1.50 },
+  { id: "chantilly", name: "Porción de crema chantilly", price: 2.00 },
+  { id: "gift-box", name: "Caja de regalo decorada", price: 3.00 },
+];
+
+export const getCustomizationPrice = (customizations: string[]): number => {
+  return customizations.reduce((total, name) => {
+    const option = CUSTOMIZATION_OPTIONS.find(o => o.name === name);
+    return total + (option ? option.price : 0);
+  }, 0);
+};
+
 const INITIAL_PRODUCTS: Product[] = [
   {
     id: "budin-tradicional",

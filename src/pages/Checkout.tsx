@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { dbService } from "../services/dbService";
+import { dbService, getCustomizationPrice } from "../services/dbService";
 import type { Order } from "../services/dbService";
 import { ShoppingBag, CreditCard, ChevronRight, CheckCircle, AlertTriangle } from "lucide-react";
 
@@ -30,14 +30,7 @@ export const Checkout: React.FC = () => {
     );
   }
 
-  const getCustomizationPrice = (customizations: string[]) => {
-    const CUSTOMIZATION_PRICES: { [key: string]: number } = {
-      "Caramelo extra casero": 1.50,
-      "Porción de crema chantilly": 2.00,
-      "Caja de regalo decorada": 3.00,
-    };
-    return customizations.reduce((total, name) => total + (CUSTOMIZATION_PRICES[name] || 0), 0);
-  };
+
 
   const getItemPrice = (item: typeof cart[0]) => {
     return item.product.price + getCustomizationPrice(item.selectedCustomizations);

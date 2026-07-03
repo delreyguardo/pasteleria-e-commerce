@@ -2,18 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
+import { getCustomizationPrice } from "../services/dbService";
 
 export const Cart: React.FC = () => {
   const { cart, removeFromCart, updateCartQuantity } = useApp();
-
-  const getCustomizationPrice = (customizations: string[]) => {
-    const CUSTOMIZATION_PRICES: { [key: string]: number } = {
-      "Caramelo extra casero": 1.50,
-      "Porción de crema chantilly": 2.00,
-      "Caja de regalo decorada": 3.00,
-    };
-    return customizations.reduce((total, name) => total + (CUSTOMIZATION_PRICES[name] || 0), 0);
-  };
 
   const getItemPrice = (item: typeof cart[0]) => {
     return item.product.price + getCustomizationPrice(item.selectedCustomizations);
