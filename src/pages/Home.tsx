@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { dbService } from "../services/dbService";
+import { dbService, formatPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
 import { ArrowRight, Award, Clock, Heart, PackageCheck, Sparkles, Star } from "lucide-react";
 
@@ -31,7 +31,7 @@ export const Home: React.FC = () => {
               Pastelería artesanal enfocada en budines: recetas caseras, caramelo dorado y ese sabor de merienda que pide mate, café o una mesa compartida.
             </p>
             <div className="brand-hero-actions">
-              <Link to="/shop" className="btn btn-primary">
+              <Link to="/" className="btn btn-primary">
                 Ver Budines
                 <ArrowRight size={18} />
               </Link>
@@ -44,13 +44,17 @@ export const Home: React.FC = () => {
           <div className="brand-visual" aria-label="Logo y producto principal de Dulce Margarita">
             <img
               className="brand-logo-feature"
-              src="/images/dulce-margarita-logo.jpg"
+              src="/images/dulce-margarita-logo.webp"
               alt="Logo de Dulce Margarita, gatita pastelera con gorro de chef"
+              fetchPriority="high"
+              decoding="async"
             />
             <div className="brand-product-frame">
               <img
-                src="/images/bread_pudding.png"
+                src="/images/bread_pudding.webp"
                 alt="Budín casero de Dulce Margarita"
+                fetchPriority="high"
+                decoding="async"
               />
               <div className="brand-product-badge glass">
                 <Award size={22} />
@@ -110,7 +114,7 @@ export const Home: React.FC = () => {
               </span>
               <h2 className="heading-serif">Budines disponibles</h2>
             </div>
-            <Link to="/shop" className="btn btn-outline">
+            <Link to="/" className="btn btn-outline">
               Ver catálogo
               <ArrowRight size={16} />
             </Link>
@@ -127,7 +131,7 @@ export const Home: React.FC = () => {
                   <h3 className="heading-serif">{prod.name}</h3>
                   <p>{prod.description}</p>
                   <div className="product-card-footer">
-                    <span>${prod.price.toFixed(2)}</span>
+                     <span>{formatPrice(prod.price)}</span>
                     <Link to={`/product/${prod.id}`} className="btn-secondary product-detail-link">
                       Ver Detalles
                     </Link>
@@ -143,8 +147,10 @@ export const Home: React.FC = () => {
         <div className="container story-grid">
           <div className="story-image">
             <img
-              src="/images/dulce-margarita-logo.jpg"
+              src="/images/dulce-margarita-logo.webp"
               alt="Identidad visual Dulce Margarita"
+              loading="lazy"
+              decoding="async"
             />
           </div>
 
@@ -161,7 +167,7 @@ export const Home: React.FC = () => {
             <p>
               Para representar el negocio mientras el menú crece, la web usa el budín como foto principal: es el producto actual, el que cuenta la historia real de la pastelería hoy.
             </p>
-            <Link to="/shop" className="btn btn-primary">
+            <Link to="/" className="btn btn-primary">
               Elegir un Budín
               <Sparkles size={18} />
             </Link>

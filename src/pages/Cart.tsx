@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
-import { getCustomizationPrice } from "../services/dbService";
+import { getCustomizationPrice, formatPrice } from "../services/dbService";
 
 export const Cart: React.FC = () => {
   const { cart, removeFromCart, updateCartQuantity } = useApp();
@@ -15,8 +15,7 @@ export const Cart: React.FC = () => {
     return total + getItemPrice(item) * item.quantity;
   }, 0);
 
-  const tax = subtotal * 0.08; // 8% tax
-  const total = subtotal + tax;
+  const total = subtotal;
 
   if (cart.length === 0) {
     return (
@@ -35,7 +34,7 @@ export const Cart: React.FC = () => {
         <p style={{ color: "var(--text-secondary)", marginBottom: "32px", maxWidth: "450px", margin: "0 auto 32px" }}>
           Parece que aún no has agregado ninguna de nuestras deliciosas especialidades. ¡Endulza tu día explorando la tienda!
         </p>
-        <Link to="/shop" className="btn btn-primary">
+        <Link to="/" className="btn btn-primary">
           Explorar Productos
         </Link>
       </div>
@@ -111,7 +110,7 @@ export const Cart: React.FC = () => {
                   </div>
 
                   <span style={{ fontWeight: 600, color: "var(--text-muted)", fontSize: "0.95rem" }}>
-                    Precio unitario: ${itemPrice.toFixed(2)}
+                    Precio unitario: {formatPrice(itemPrice)}
                   </span>
                 </div>
 
@@ -153,7 +152,7 @@ export const Cart: React.FC = () => {
 
                   {/* Subtotal of item */}
                   <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-primary)", minWidth: "80px", textAlign: "right" }}>
-                    ${(itemPrice * item.quantity).toFixed(2)}
+                    {formatPrice(itemPrice * item.quantity)}
                   </span>
 
                   {/* Remove Button */}
@@ -191,12 +190,7 @@ export const Cart: React.FC = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "var(--text-secondary)" }}>Subtotal</span>
-              <span style={{ fontWeight: 600 }}>${subtotal.toFixed(2)}</span>
-            </div>
-            
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "var(--text-secondary)" }}>Impuestos (8%)</span>
-              <span style={{ fontWeight: 600 }}>${tax.toFixed(2)}</span>
+              <span style={{ fontWeight: 600 }}>{formatPrice(subtotal)}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -209,7 +203,7 @@ export const Cart: React.FC = () => {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
               <span style={{ fontWeight: 700, fontSize: "1.1rem" }}>Total</span>
               <span style={{ fontWeight: 800, fontSize: "1.6rem", color: "var(--accent-caramel-hover)" }}>
-                ${total.toFixed(2)}
+                 {formatPrice(total)}
               </span>
             </div>
           </div>
@@ -219,7 +213,7 @@ export const Cart: React.FC = () => {
               Proceder al Pago
               <ArrowRight size={18} />
             </Link>
-            <Link to="/shop" className="btn btn-outline text-center" style={{ width: "100%", padding: "14px" }}>
+             <Link to="/" className="btn btn-outline text-center" style={{ width: "100%", padding: "14px" }}>
               Seguir Comprando
             </Link>
           </div>

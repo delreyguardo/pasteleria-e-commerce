@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { dbService, CUSTOMIZATION_OPTIONS, getCustomizationPrice } from "../services/dbService";
+import { dbService, CUSTOMIZATION_OPTIONS, getCustomizationPrice, formatPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
 import { useApp } from "../context/AppContext";
 import { ArrowLeft, Check, ShoppingCart, Info, Award } from "lucide-react";
@@ -47,7 +47,7 @@ export const ProductDetail: React.FC = () => {
       <div className="container text-center" style={{ padding: "100px 24px" }}>
         <h2 className="heading-serif" style={{ fontSize: "2rem", marginBottom: "16px" }}>¡Postre no encontrado!</h2>
         <p style={{ color: "var(--text-secondary)", marginBottom: "24px" }}>Lo sentimos, la delicia que buscas no está en nuestro catálogo.</p>
-        <Link to="/shop" className="btn btn-primary">Volver a la Tienda</Link>
+        <Link to="/" className="btn btn-primary">Volver a la Tienda</Link>
       </div>
     );
   }
@@ -73,7 +73,7 @@ export const ProductDetail: React.FC = () => {
   return (
     <div className="container animate-fade-in" style={{ padding: "40px 24px 100px" }}>
       {/* Back button */}
-      <Link to="/shop" style={{
+      <Link to="/" style={{
         display: "inline-flex",
         alignItems: "center",
         gap: "8px",
@@ -225,7 +225,7 @@ export const ProductDetail: React.FC = () => {
                     <span>{opt.name}</span>
                   </div>
                   <span style={{ fontWeight: 600, color: "var(--accent-caramel-hover)" }}>
-                    +${opt.price.toFixed(2)}
+                    +{formatPrice(opt.price)}
                   </span>
                 </label>
               ))}
@@ -245,7 +245,7 @@ export const ProductDetail: React.FC = () => {
             <div>
               <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "block" }}>Precio Total</span>
               <span style={{ fontSize: "2rem", fontWeight: 800, color: "var(--accent-caramel-hover)" }}>
-                ${currentPrice.toFixed(2)}
+                {formatPrice(currentPrice)}
               </span>
             </div>
 
@@ -285,16 +285,6 @@ export const ProductDetail: React.FC = () => {
         </div>
       </div>
 
-      <style>{`
-        .hover-link:hover {
-          color: var(--accent-caramel-hover) !important;
-          transform: translateX(-4px);
-        }
-        @media (max-width: 768px) {
-          .detail-layout { grid-template-columns: 1fr !important; gap: 32px !important; }
-          div[style*="height: 450px"] { height: 280px !important; }
-        }
-      `}</style>
     </div>
   );
 };

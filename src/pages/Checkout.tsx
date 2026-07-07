@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { dbService, getCustomizationPrice } from "../services/dbService";
+import { dbService, getCustomizationPrice, formatPrice } from "../services/dbService";
 import type { Order } from "../services/dbService";
-import { ShoppingBag, CreditCard, ChevronRight, CheckCircle, AlertTriangle } from "lucide-react";
+import { ShoppingBag, CreditCard, ChevronRight, CheckCircle } from "lucide-react";
 
 export const Checkout: React.FC = () => {
   const { user, cart, clearCart } = useApp();
@@ -25,7 +25,7 @@ export const Checkout: React.FC = () => {
       <div className="container text-center animate-fade-in" style={{ padding: "100px 24px" }}>
         <h2 className="heading-serif" style={{ fontSize: "2rem", marginBottom: "16px" }}>Checkout vacío</h2>
         <p style={{ color: "var(--text-secondary)", marginBottom: "24px" }}>No tienes productos en tu carrito para realizar un pedido.</p>
-        <Link to="/shop" className="btn btn-primary">Ir a la Tienda</Link>
+        <Link to="/" className="btn btn-primary">Ir a la Tienda</Link>
       </div>
     );
   }
@@ -40,15 +40,11 @@ export const Checkout: React.FC = () => {
     return total + getItemPrice(item) * item.quantity;
   }, 0);
 
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  // Sin recargo adicional — precios ya incluyen IVA
+  const total = subtotal;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      setErrorMsg("Debes iniciar sesión para realizar pedidos.");
-      return;
-    }
 
     if (!customerName || !shippingAddress || !phone) {
       setErrorMsg("Por favor completa todos los campos requeridos.");
@@ -60,14 +56,14 @@ export const Checkout: React.FC = () => {
 
     try {
       const orderPayload: Order = {
-        userId: user.uid,
-        userEmail: user.email,
+        userId: user ? user.uid : "invitado",
+        userEmail: user ? user.email : "anonimo@dulcemargarita.com",
         customerName,
         shippingAddress,
         phone,
         items: cart,
         subtotal,
-        tax,
+        tax: 0,
         total,
         status: "Pending",
         createdAt: new Date().toISOString(),
@@ -85,45 +81,29 @@ export const Checkout: React.FC = () => {
     }
   };
 
-  // 1. If not logged in, show auth gate
-  if (!user) {
-    return (
-      <div className="container text-center animate-fade-in" style={{ padding: "100px 24px" }}>
-        <div className="glass" style={{
-          maxWidth: "500px",
-          margin: "0 auto",
-          padding: "40px",
-          borderRadius: "var(--radius-md)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "24px"
-        }}>
-          <div className="flex-center" style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "50%",
-            backgroundColor: "var(--accent-cream)",
-            color: "var(--accent-caramel-hover)",
-            margin: "0 auto"
-          }}>
-            <AlertTriangle size={32} />
-          </div>
-          <h2 className="heading-serif" style={{ fontSize: "1.8rem" }}>Inicio de Sesión Requerido</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
-            Para poder procesar y registrar tu pedido en nuestro sistema de pastelería, necesitas iniciar sesión en tu cuenta.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <Link to="/auth?redirect=checkout" className="btn btn-primary" style={{ padding: "12px" }}>
-              Iniciar Sesión / Registrarse
-            </Link>
-            <Link to="/cart" className="btn btn-outline" style={{ padding: "12px" }}>
-              Volver al Carrito
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getWhatsAppLink = (order: Order) => {
+    const itemsText = order.items.map(item => {
+      const customizations = item.selectedCustomizations.length > 0 
+        ? ` (Agregados: ${item.selectedCustomizations.join(", ")})` 
+        : "";
+      return `- ${item.product.name} x${item.quantity} [${item.selectedSize}]${customizations}`;
+    }).join("\n");
+
+    const methodText = paymentMethod === "transfer" ? "Transferencia Bancaria" : "Efectivo al recibir";
+
+    let text = `¡Hola Dulce Margarita! Quisiera realizar un pedido:\n\n`;
+    text += `👤 *Nombre:* ${order.customerName}\n`;
+    text += `📍 *Dirección:* ${order.shippingAddress}\n`;
+    text += `📞 *Teléfono:* ${order.phone}\n`;
+    if (order.notes) {
+      text += `📝 *Notas:* ${order.notes}\n`;
+    }
+    text += `💳 *Método de pago:* ${methodText}\n\n`;
+    text += `🛒 *Detalle de compra:*\n${itemsText}\n\n`;
+    text += `💰 *Total:* ${formatPrice(order.total)}`;
+    
+    return `https://wa.me/5493515724879?text=${encodeURIComponent(text)}`;
+  };
 
   // 2. Success screen
   if (successOrder) {
@@ -180,18 +160,18 @@ export const Checkout: React.FC = () => {
               <strong>{successOrder.shippingAddress}</strong>
             </div>
             <div>
-              <span style={{ color: "var(--text-muted)" }}>Total Pagado:</span>{" "}
-              <strong style={{ color: "var(--accent-caramel-hover)" }}>${successOrder.total.toFixed(2)}</strong>
+              <span style={{ color: "var(--text-muted)" }}>Total a Pagar:</span>{" "}
+              <strong style={{ color: "var(--accent-caramel-hover)" }}>{formatPrice(successOrder.total)}</strong>
             </div>
           </div>
 
           <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-            Puedes hacer seguimiento de este pedido en cualquier momento desde tu panel de usuario.
+            Hacé clic en el botón de abajo para enviar los detalles de tu pedido directamente a nuestro WhatsApp y coordinar el envío/pago.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
-            <a 
-              href={`https://wa.me/5491123456789?text=Hola%20Dulce%20Margarita!%20Acabo%20de%20realizar%20el%20pedido%20ID%20${successOrder.id}.%20Adjunto%20el%20comprobante%20de%20pago.`}
+            <a
+              href={getWhatsAppLink(successOrder)}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
@@ -203,14 +183,16 @@ export const Checkout: React.FC = () => {
                 color: "#ffffff"
               }}
             >
-              📱 Enviar comprobante por WhatsApp
+              📱 Enviar pedido por WhatsApp
             </a>
             
             <div style={{ display: "flex", gap: "12px" }}>
-              <Link to="/orders" className="btn btn-secondary" style={{ flexGrow: 1, padding: "12px", fontSize: "0.9rem" }}>
-                Ver Mis Pedidos
-              </Link>
-              <Link to="/shop" className="btn btn-outline" style={{ flexGrow: 1, padding: "12px", fontSize: "0.9rem" }}>
+              {user && (
+                <Link to="/orders" className="btn btn-secondary" style={{ flexGrow: 1, padding: "12px", fontSize: "0.9rem" }}>
+                  Ver Mis Pedidos
+                </Link>
+              )}
+              <Link to="/" className="btn btn-outline" style={{ flexGrow: 1, padding: "12px", fontSize: "0.9rem" }}>
                 Volver a la Tienda
               </Link>
             </div>
@@ -363,12 +345,11 @@ export const Checkout: React.FC = () => {
                 gap: "8px",
                 marginBottom: "12px"
               }}>
-                <div><strong>Banco:</strong> Banco Dulce Margarita (Simulado)</div>
-                <div><strong>CBU:</strong> 0000003100012345678901</div>
-                <div><strong>Alias:</strong> dulce.margarita.mp</div>
-                <div><strong>Titular:</strong> Pastelería Dulce Margarita S.A.</div>
+                <div><strong>Alias:</strong> Dulce.margarita10</div>
+                <div><strong>Titular:</strong> Camila Belén Ávila</div>
+                <div><strong>Billetera:</strong> Claro Pay</div>
                 <div style={{ color: "var(--accent-caramel-hover)", fontWeight: 600, marginTop: "4px" }}>
-                  ⚠️ Envía el comprobante de transferencia al finalizar para iniciar la cocción.
+                  ⚠️ Enviá el comprobante por WhatsApp al finalizar para iniciar la preparación.
                 </div>
               </div>
             )}
@@ -412,7 +393,7 @@ export const Checkout: React.FC = () => {
                   <span style={{ color: "var(--text-muted)" }}>{item.selectedSize.split(" (")[0]}</span>
                 </div>
                 <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                  ${(getItemPrice(item) * item.quantity).toFixed(2)}
+                  {formatPrice(getItemPrice(item) * item.quantity)}
                 </span>
               </div>
             ))}
@@ -424,32 +405,23 @@ export const Checkout: React.FC = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.95rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "var(--text-secondary)" }}>Subtotal</span>
-              <span style={{ fontWeight: 600 }}>${subtotal.toFixed(2)}</span>
+              <span style={{ fontWeight: 600 }}>{formatPrice(subtotal)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "var(--text-secondary)" }}>Impuestos (8%)</span>
-              <span style={{ fontWeight: 600 }}>${tax.toFixed(2)}</span>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "var(--text-secondary)" }}>Despacho</span>
+              <span style={{ color: "var(--text-secondary)" }}>Envío</span>
               <span style={{ fontWeight: 600, color: "var(--success)" }}>Gratis</span>
             </div>
             <div style={{ height: "1px", backgroundColor: "var(--border-color)", margin: "8px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-              <span style={{ fontWeight: 700 }}>Total a Pagar</span>
+              <span style={{ fontWeight: 700 }}>Total</span>
               <span style={{ fontWeight: 800, fontSize: "1.45rem", color: "var(--accent-caramel-hover)" }}>
-                ${total.toFixed(2)}
+                {formatPrice(total)}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 992px) {
-          .checkout-layout { grid-template-columns: 1fr !important; gap: 32px !important; }
-        }
-      `}</style>
     </div>
   );
 };

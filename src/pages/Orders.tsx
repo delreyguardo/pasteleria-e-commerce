@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { dbService } from "../services/dbService";
+import { dbService, formatPrice } from "../services/dbService";
 import type { Order } from "../services/dbService";
 import { Calendar, MapPin, ClipboardList } from "lucide-react";
 
@@ -72,7 +72,7 @@ export const Orders: React.FC = () => {
           <p style={{ color: "var(--text-secondary)", marginBottom: "24px" }}>
             Cuando realices una compra de budín de pan o pasteles, aparecerán aquí para que les hagas seguimiento.
           </p>
-          <Link to="/shop" className="btn btn-primary">Ir a la Tienda</Link>
+          <Link to="/" className="btn btn-primary">Ir a la Tienda</Link>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -169,7 +169,7 @@ export const Orders: React.FC = () => {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                       <span>Total Pagado:</span>
                       <strong style={{ fontSize: "1.2rem", color: "var(--accent-caramel-hover)", fontWeight: 800 }}>
-                        ${ord.total.toFixed(2)}
+                        {formatPrice(ord.total)}
                       </strong>
                     </div>
                   </div>
@@ -180,12 +180,6 @@ export const Orders: React.FC = () => {
         </div>
       )}
 
-      <style>{`
-        @media (max-width: 600px) {
-          .orders-card-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
-          .orders-card-meta { border-left: none !important; padding-left: 0 !important; border-top: 1px solid var(--border-color); padding-top: 12px; }
-        }
-      `}</style>
     </div>
   );
 };

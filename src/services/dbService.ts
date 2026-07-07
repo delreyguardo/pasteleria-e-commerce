@@ -1,4 +1,5 @@
-import { db, isFirebaseConfigured } from "../firebase";
+import { db as _db, isFirebaseConfigured } from "../firebase";
+import type { Firestore } from "firebase/firestore";
 import {
   collection,
   getDocs,
@@ -11,6 +12,9 @@ import {
   query,
   orderBy
 } from "firebase/firestore";
+
+// Narrow the type: when isFirebaseConfigured is true, db is guaranteed non-null
+const db = _db as Firestore;
 
 export interface Product {
   id: string;
@@ -54,10 +58,14 @@ export interface CustomizationOption {
 }
 
 export const CUSTOMIZATION_OPTIONS: CustomizationOption[] = [
-  { id: "extra-caramel", name: "Caramelo extra casero", price: 1.50 },
-  { id: "chantilly", name: "Porción de crema chantilly", price: 2.00 },
-  { id: "gift-box", name: "Caja de regalo decorada", price: 3.00 },
+  { id: "extra-caramel", name: "Caramelo extra casero", price: 500 },
+  { id: "chantilly", name: "Porción de crema chantilly", price: 800 },
+  { id: "gift-box", name: "Caja de regalo decorada", price: 1500 },
 ];
+
+export const formatPrice = (price: number): string => {
+  return `$${Math.round(price).toLocaleString("es-AR")}`;
+};
 
 export const getCustomizationPrice = (customizations: string[]): number => {
   return customizations.reduce((total, name) => {
@@ -68,41 +76,63 @@ export const getCustomizationPrice = (customizations: string[]): number => {
 
 const INITIAL_PRODUCTS: Product[] = [
   {
-    id: "budin-tradicional",
-    name: "Budín de Pan Tradicional",
-    description: "Clásico budín de pan casero elaborado con receta familiar, bañado en caramelo artesanal dulce y suave.",
-    price: 15.00,
+    id: "budin-limon-amapola",
+    name: "Budín de Limón y Amapola",
+    description: "Suave y aromático, con glaseado de limón casero y semillas de amapola. Húmedo por dentro, con ese cítrico fresco que acompaña perfecto el mate o el café.",
+    price: 12000,
     category: "budin",
-    image: "/images/bread_pudding.png",
-    ingredients: ["Pan artesanal", "Leche entera", "Azúcar", "Caramelo", "Esencia de vainilla", "Ralladura de limón"],
+    image: "/images/budin-limon-amapola.webp",
+    ingredients: ["Harina", "Limón fresco", "Semillas de amapola", "Huevos", "Azúcar", "Glaseado de limón"],
+    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    stock: 10
+  },
+  {
+    id: "budin-carrot-cake",
+    name: "Budín Carrot Cake",
+    description: "Con zanahoria rallada, especias cálidas y cubierto con una crema de queso espesa y nueces tostadas. Una combinación clásica que siempre enamora.",
+    price: 12000,
+    category: "budin",
+    image: "/images/budin-carrot-cake.webp",
+    ingredients: ["Zanahoria rallada", "Nueces", "Crema de queso", "Canela", "Jengibre", "Azúcar mascabo"],
+    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    stock: 8
+  },
+  {
+    id: "budin-chocolate",
+    name: "Budín de Chocolate",
+    description: "Intenso y esponjoso, bañado en ganache de chocolate negro artesanal con chips encima. Para los que no pueden resistirse al chocolate puro.",
+    price: 12000,
+    category: "budin",
+    image: "/images/budin-chocolate.webp",
+    ingredients: ["Cacao amargo", "Chocolate negro", "Ganache casero", "Chips de chocolate", "Huevos", "Manteca"],
     sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
     stock: 12
   },
   {
     id: "budin-manzana",
-    name: "Budín de Manzana y Caramelo",
-    description: "Una variante húmeda y perfumada, con láminas de manzana caramelizadas y un toque suave de canela.",
-    price: 18.50,
+    name: "Budín de Manzana",
+    description: "Con láminas de manzana caramelizadas y canela en cada bocado. Húmedo, perfumado y con una corteza dorada que lo hace irresistible.",
+    price: 12000,
     category: "budin",
-    image: "/images/bread_pudding.png",
-    ingredients: ["Pan artesanal", "Manzanas rojas", "Canela", "Leche", "Caramelo"],
+    image: "/images/budin-manzana.webp",
+    ingredients: ["Manzana roja", "Canela", "Azúcar rubio", "Huevos", "Harina", "Manteca"],
     sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
-    stock: 8
+    stock: 10
   },
   {
-    id: "budin-vainilla",
-    name: "Budín de Vainilla y Limón",
-    description: "Budín suave y aromático, ideal para acompañar mates o café, con vainilla y ralladura fresca de limón.",
-    price: 16.00,
+    id: "budin-banana-chips",
+    name: "Budín de Banana con Chips",
+    description: "Banana bien madura que da una textura húmeda y dulce natural, con chips de chocolate distribuidos por toda la miga. Un clásico que nunca falla.",
+    price: 12000,
     category: "budin",
-    image: "/images/bread_pudding.png",
-    ingredients: ["Pan artesanal", "Leche", "Huevos", "Vainilla", "Limón", "Caramelo"],
+    image: "/images/budin-banana-chips.webp",
+    ingredients: ["Banana madura", "Chips de chocolate", "Harina", "Huevos", "Azúcar", "Esencia de vainilla"],
     sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
     stock: 10
   }
 ];
 
-const PRODUCT_SEED_VERSION = "dulce-margarita-budines-v1";
+const PRODUCT_SEED_VERSION = "dulce-margarita-budines-v3";
 
 const initLocalDb = () => {
   if (localStorage.getItem("bakery_products_version") !== PRODUCT_SEED_VERSION) {

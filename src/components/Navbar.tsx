@@ -43,7 +43,7 @@ export const Navbar: React.FC = () => {
           color: "var(--text-primary)"
         }} className="heading-serif">
           <img
-            src="/images/dulce-margarita-logo.jpg"
+            src="/images/dulce-margarita-logo.webp"
             alt="Logo de Dulce Margarita"
             style={{
               width: "42px",
@@ -63,8 +63,8 @@ export const Navbar: React.FC = () => {
           alignItems: "center",
           gap: "32px"
         }} className="desktop-nav">
-          <Link to="/" style={{ fontWeight: 500, color: "var(--text-secondary)" }}>Inicio</Link>
-          <Link to="/shop" style={{ fontWeight: 500, color: "var(--text-secondary)" }}>Tienda</Link>
+          <Link to="/" style={{ fontWeight: 500, color: "var(--text-secondary)" }}>Tienda</Link>
+          <Link to="/sobre-nosotros" style={{ fontWeight: 500, color: "var(--text-secondary)" }}>Sobre Nosotros</Link>
           {user && (
             <Link to="/orders" style={{ fontWeight: 500, color: "var(--text-secondary)" }}>Mis Pedidos</Link>
           )}
@@ -191,8 +191,8 @@ export const Navbar: React.FC = () => {
           gap: "16px",
           boxShadow: "0 10px 20px rgba(0,0,0,0.05)"
         }}>
-          <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 500, fontSize: "1.1rem" }}>Inicio</Link>
-          <Link to="/shop" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 500, fontSize: "1.1rem" }}>Tienda</Link>
+          <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 500, fontSize: "1.1rem" }}>Tienda</Link>
+          <Link to="/sobre-nosotros" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 500, fontSize: "1.1rem" }}>Sobre Nosotros</Link>
           {user && (
             <Link to="/orders" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 500, fontSize: "1.1rem" }}>Mis Pedidos</Link>
           )}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
-import { dbService } from "../services/dbService";
+import { dbService, formatPrice } from "../services/dbService";
 import type { Order, Product } from "../services/dbService";
 import { Shield, ShoppingBag, Package, RefreshCw, Plus, Minus, DollarSign, Trash2 } from "lucide-react";
 
@@ -21,7 +21,7 @@ export const Admin: React.FC = () => {
   const [newDescription, setNewDescription] = useState("");
   const [newPrice, setNewPrice] = useState(10.00);
   const [newCategory, setNewCategory] = useState<"budin" | "pastel">("budin");
-  const [newImage, setNewImage] = useState("/images/bread_pudding.png");
+  const [newImage, setNewImage] = useState("/images/budin-limon-amapola.webp");
   const [newIngredients, setNewIngredients] = useState("");
   const [newSizes, setNewSizes] = useState("Mediano (6 porciones), Grande (12 porciones)");
   const [newStock, setNewStock] = useState(10);
@@ -321,7 +321,7 @@ export const Admin: React.FC = () => {
                       <div style={{ textAlign: "right" }}>
                         <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "block" }}>Total a Recaudar</span>
                         <span style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--accent-caramel-hover)" }}>
-                          ${ord.total.toFixed(2)}
+                          {formatPrice(ord.total)}
                         </span>
                       </div>
 
@@ -449,10 +449,11 @@ export const Admin: React.FC = () => {
                   onChange={(e) => setNewImage(e.target.value)}
                   className="form-control"
                 >
-                  <option value="/images/bread_pudding.png">Budín Protagonista</option>
-                  <option value="/images/chocolate_cake.png">Pastel de Chocolate</option>
-                  <option value="/images/red_velvet.png">Red Velvet Cake</option>
-                  <option value="/images/hero_bakery.png">Mesa Dulce General</option>
+                  <option value="/images/budin-limon-amapola.webp">Limón y Amapola</option>
+                  <option value="/images/budin-carrot-cake.webp">Carrot Cake</option>
+                  <option value="/images/budin-chocolate.webp">Chocolate</option>
+                  <option value="/images/budin-manzana.webp">Manzana</option>
+                  <option value="/images/budin-banana-chips.webp">Banana con Chips</option>
                 </select>
               </div>
 
@@ -610,24 +611,6 @@ export const Admin: React.FC = () => {
           )}
         </div>
       )}
-
-      <style>{`
-        @media (max-width: 992px) {
-          .admin-order-card { grid-template-columns: 1fr !important; gap: 16px !important; }
-          .admin-order-actions { align-items: flex-start !important; text-align: left !important; }
-          .admin-order-actions > div { text-align: left !important; }
-        }
-        @media (max-width: 768px) {
-          .admin-order-grid { grid-template-columns: 1fr !important; }
-          .admin-inventory-row { grid-template-columns: 80px 1fr !important; gap: 16px !important; }
-          .admin-inventory-row > div:nth-child(3), .admin-inventory-row > div:nth-child(4), .admin-inventory-row > div:nth-child(5) {
-            grid-column: span 2;
-            flex-direction: row !important;
-            justify-content: space-between;
-            align-items: center;
-          }
-        }
-      `}</style>
     </div>
   );
 };
