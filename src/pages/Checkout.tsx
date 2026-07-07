@@ -86,7 +86,10 @@ export const Checkout: React.FC = () => {
       const customizations = item.selectedCustomizations.length > 0 
         ? ` (Agregados: ${item.selectedCustomizations.join(", ")})` 
         : "";
-      return `- ${item.product.name} x${item.quantity} [${item.selectedSize}]${customizations}`;
+      const sizeText = item.selectedSize && item.selectedSize !== "Estándar" 
+        ? ` [${item.selectedSize}]` 
+        : "";
+      return `- ${item.product.name} x${item.quantity}${sizeText}${customizations}`;
     }).join("\n");
 
     const methodText = paymentMethod === "transfer" ? "Transferencia Bancaria" : "Efectivo al recibir";
@@ -390,7 +393,9 @@ export const Checkout: React.FC = () => {
                 />
                 <div style={{ flexGrow: 1, display: "flex", flexDirection: "column", fontSize: "0.85rem" }}>
                   <span style={{ fontWeight: 700 }}>{item.product.name} x {item.quantity}</span>
-                  <span style={{ color: "var(--text-muted)" }}>{item.selectedSize.split(" (")[0]}</span>
+                  {item.selectedSize && item.selectedSize !== "Estándar" && (
+                    <span style={{ color: "var(--text-muted)" }}>{item.selectedSize.split(" (")[0]}</span>
+                  )}
                 </div>
                 <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
                   {formatPrice(getItemPrice(item) * item.quantity)}

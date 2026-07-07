@@ -83,7 +83,7 @@ const INITIAL_PRODUCTS: Product[] = [
     category: "budin",
     image: "/images/budin-limon-amapola.webp",
     ingredients: ["Harina", "Limón fresco", "Semillas de amapola", "Huevos", "Azúcar", "Glaseado de limón"],
-    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    sizes: ["Estándar"],
     stock: 10
   },
   {
@@ -94,7 +94,7 @@ const INITIAL_PRODUCTS: Product[] = [
     category: "budin",
     image: "/images/budin-carrot-cake.webp",
     ingredients: ["Zanahoria rallada", "Nueces", "Crema de queso", "Canela", "Jengibre", "Azúcar mascabo"],
-    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    sizes: ["Estándar"],
     stock: 8
   },
   {
@@ -105,7 +105,7 @@ const INITIAL_PRODUCTS: Product[] = [
     category: "budin",
     image: "/images/budin-chocolate.webp",
     ingredients: ["Cacao amargo", "Chocolate negro", "Ganache casero", "Chips de chocolate", "Huevos", "Manteca"],
-    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    sizes: ["Estándar"],
     stock: 12
   },
   {
@@ -116,7 +116,7 @@ const INITIAL_PRODUCTS: Product[] = [
     category: "budin",
     image: "/images/budin-manzana.webp",
     ingredients: ["Manzana roja", "Canela", "Azúcar rubio", "Huevos", "Harina", "Manteca"],
-    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    sizes: ["Estándar"],
     stock: 10
   },
   {
@@ -127,12 +127,12 @@ const INITIAL_PRODUCTS: Product[] = [
     category: "budin",
     image: "/images/budin-banana-chips.webp",
     ingredients: ["Banana madura", "Chips de chocolate", "Harina", "Huevos", "Azúcar", "Esencia de vainilla"],
-    sizes: ["Mediano (6 porciones)", "Grande (12 porciones)"],
+    sizes: ["Estándar"],
     stock: 10
   }
 ];
 
-const PRODUCT_SEED_VERSION = "dulce-margarita-budines-v3";
+const PRODUCT_SEED_VERSION = "dulce-margarita-budines-v4";
 
 const initLocalDb = () => {
   if (localStorage.getItem("bakery_products_version") !== PRODUCT_SEED_VERSION) {

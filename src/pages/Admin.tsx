@@ -297,7 +297,10 @@ export const Admin: React.FC = () => {
                           <div key={i} style={{ display: "flex", justifyItems: "center", gap: "10px", fontSize: "0.85rem" }}>
                             <span>•</span>
                             <div style={{ flexGrow: 1 }}>
-                              <strong>{item.product.name} ({item.selectedSize.split(" (")[0]})</strong> x{item.quantity}
+                              <strong>
+                                {item.product.name}
+                                {item.selectedSize && item.selectedSize !== "Estándar" && ` (${item.selectedSize.split(" (")[0]})`}
+                              </strong> x{item.quantity}
                               {item.selectedCustomizations.length > 0 && (
                                 <span style={{ color: "var(--accent-caramel-hover)" }}>
                                   {" "}-- [Toppings: {item.selectedCustomizations.join(", ")}]

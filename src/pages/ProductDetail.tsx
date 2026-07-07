@@ -26,6 +26,8 @@ export const ProductDetail: React.FC = () => {
         // Default to first size
         if (data.sizes && data.sizes.length > 0) {
           setSelectedSize(data.sizes[0]);
+        } else {
+          setSelectedSize("Estándar");
         }
       }
       setLoading(false);
@@ -160,40 +162,42 @@ export const ProductDetail: React.FC = () => {
           <div style={{ height: "1px", backgroundColor: "var(--border-color)" }} />
 
           {/* Configuration: Size */}
-          <div>
-            <h4 style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "12px", color: "var(--text-secondary)" }}>
-              Selecciona el Tamaño:
-            </h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {product.sizes.map((size) => (
-                <label 
-                  key={size} 
-                  className="glass flex-center"
-                  style={{
-                    justifyContent: "flex-start",
-                    padding: "16px",
-                    borderRadius: "var(--radius-md)",
-                    cursor: "pointer",
-                    border: selectedSize === size ? "2px solid var(--accent-caramel)" : "1px solid var(--border-glass)",
-                    transition: "var(--transition)",
-                    backgroundColor: selectedSize === size ? "var(--accent-cream)" : "var(--bg-glass)",
-                    color: selectedSize === size ? "var(--accent-caramel-hover)" : "var(--text-primary)",
-                    fontWeight: selectedSize === size ? 600 : 500
-                  }}
-                >
-                  <input 
-                    type="radio" 
-                    name="product-size" 
-                    value={size}
-                    checked={selectedSize === size}
-                    onChange={() => setSelectedSize(size)}
-                    style={{ marginRight: "12px", accentColor: "var(--accent-caramel)" }}
-                  />
-                  {size}
-                </label>
-              ))}
+          {product.sizes && product.sizes.length > 1 && (
+            <div>
+              <h4 style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "12px", color: "var(--text-secondary)" }}>
+                Selecciona el Tamaño:
+              </h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {product.sizes.map((size) => (
+                  <label 
+                    key={size} 
+                    className="glass flex-center"
+                    style={{
+                      justifyContent: "flex-start",
+                      padding: "16px",
+                      borderRadius: "var(--radius-md)",
+                      cursor: "pointer",
+                      border: selectedSize === size ? "2px solid var(--accent-caramel)" : "1px solid var(--border-glass)",
+                      transition: "var(--transition)",
+                      backgroundColor: selectedSize === size ? "var(--accent-cream)" : "var(--bg-glass)",
+                      color: selectedSize === size ? "var(--accent-caramel-hover)" : "var(--text-primary)",
+                      fontWeight: selectedSize === size ? 600 : 500
+                    }}
+                  >
+                    <input 
+                      type="radio" 
+                      name="product-size" 
+                      value={size}
+                      checked={selectedSize === size}
+                      onChange={() => setSelectedSize(size)}
+                      style={{ marginRight: "12px", accentColor: "var(--accent-caramel)" }}
+                    />
+                    {size}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Configuration: Customizations */}
           <div>

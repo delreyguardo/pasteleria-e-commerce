@@ -87,15 +87,17 @@ export const Cart: React.FC = () => {
                   </h3>
                   
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    <span className="badge" style={{
-                      backgroundColor: "var(--bg-primary)",
-                      border: "1px solid var(--border-color)",
-                      color: "var(--text-secondary)",
-                      fontSize: "0.75rem",
-                      padding: "2px 8px"
-                    }}>
-                      Tamaño: {item.selectedSize.split(" (")[0]}
-                    </span>
+                    {item.selectedSize && item.selectedSize !== "Estándar" && (
+                      <span className="badge" style={{
+                        backgroundColor: "var(--bg-primary)",
+                        border: "1px solid var(--border-color)",
+                        color: "var(--text-secondary)",
+                        fontSize: "0.75rem",
+                        padding: "2px 8px"
+                      }}>
+                        Tamaño: {item.selectedSize.split(" (")[0]}
+                      </span>
+                    )}
                     
                     {item.selectedCustomizations.map((cust, i) => (
                       <span key={i} className="badge" style={{

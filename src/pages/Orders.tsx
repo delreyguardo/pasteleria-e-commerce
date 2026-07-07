@@ -135,8 +135,10 @@ export const Orders: React.FC = () => {
                         <div style={{ display: "flex", flexDirection: "column", fontSize: "0.85rem", flexGrow: 1 }}>
                           <span style={{ fontWeight: 600 }}>{item.product.name} x {item.quantity}</span>
                           <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
-                            {item.selectedSize.split(" (")[0]}
-                            {item.selectedCustomizations.length > 0 && ` -- Toppings: ${item.selectedCustomizations.join(", ")}`}
+                            {[
+                              item.selectedSize && item.selectedSize !== "Estándar" ? item.selectedSize.split(" (")[0] : null,
+                              item.selectedCustomizations.length > 0 ? `Toppings: ${item.selectedCustomizations.join(", ")}` : null
+                            ].filter(Boolean).join(" -- ")}
                           </span>
                         </div>
                       </div>
