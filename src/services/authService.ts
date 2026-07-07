@@ -83,21 +83,34 @@ export const authService = {
 
     // Local Storage Mock
     const mockUsers = JSON.parse(localStorage.getItem("bakery_users") || "[]");
+    const isAdminEmail = email.toLowerCase() === "admin@pasteleria.com";
     const exists = mockUsers.some((u: any) => u.email.toLowerCase() === email.toLowerCase());
-    if (exists) {
+    
+    if (exists && !isAdminEmail) {
       throw new Error("El correo electrónico ya está registrado.");
     }
 
-    const uid = "mock_" + Math.random().toString(36).substr(2, 9);
-    const newUser = { email, password, uid };
-    mockUsers.push(newUser);
-    localStorage.setItem("bakery_users", JSON.stringify(mockUsers));
+    let session: UserSession;
+    if (isAdminEmail && exists) {
+      // If admin exists, log in directly instead of failing registration
+      const existingAdmin = mockUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
+      session = {
+        uid: existingAdmin.uid,
+        email: existingAdmin.email,
+        role: "admin"
+      };
+    } else {
+      const uid = isAdminEmail ? "mock_admin_1" : "mock_" + Math.random().toString(36).substr(2, 9);
+      const newUser = { email, password, uid };
+      mockUsers.push(newUser);
+      localStorage.setItem("bakery_users", JSON.stringify(mockUsers));
 
-    const session: UserSession = {
-      uid,
-      email,
-      role: getRoleFromEmail(email)
-    };
+      session = {
+        uid,
+        email,
+        role: getRoleFromEmail(email)
+      };
+    }
     
     currentSessionUser = session;
     localStorage.setItem("bakery_current_session", JSON.stringify(session));
@@ -120,9 +133,22 @@ export const authService = {
 
     // Local Storage Mock
     const mockUsers = JSON.parse(localStorage.getItem("bakery_users") || "[]");
-    const foundUser = mockUsers.find(
-      (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
+    const isAdminEmail = email.toLowerCase() === "admin@pasteleria.com";
+    
+    let foundUser;
+    if (isAdminEmail) {
+      foundUser = mockUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
+      if (!foundUser) {
+        // Create if missing
+        foundUser = { email: "admin@pasteleria.com", password, uid: "mock_admin_1" };
+        mockUsers.push(foundUser);
+        localStorage.setItem("bakery_users", JSON.stringify(mockUsers));
+      }
+    } else {
+      foundUser = mockUsers.find(
+        (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+      );
+    }
 
     if (!foundUser) {
       throw new Error("Correo o contraseña incorrectos.");
