@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { dbService, formatPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
@@ -6,7 +6,6 @@ import { Filter, RefreshCw, Search } from "lucide-react";
 
 export const Shop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"all" | "budin">("all");
@@ -35,7 +34,6 @@ export const Shop: React.FC = () => {
       try {
         const data = await dbService.getProducts();
         setProducts(data);
-        setFilteredProducts(data);
       } catch (err) {
         console.error("Failed to load products", err);
       } finally {
@@ -46,7 +44,7 @@ export const Shop: React.FC = () => {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
+  const filteredProducts = useMemo(() => {
     let result = [...products];
 
     if (selectedCategory !== "all") {
@@ -68,7 +66,7 @@ export const Shop: React.FC = () => {
       result.sort((a, b) => b.price - a.price);
     }
 
-    setFilteredProducts(result);
+    return result;
   }, [products, searchQuery, selectedCategory, sortBy]);
 
   return (

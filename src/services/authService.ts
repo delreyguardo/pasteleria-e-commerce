@@ -13,6 +13,12 @@ export interface UserSession {
   role: "admin" | "user";
 }
 
+interface MockUser {
+  email: string;
+  password: string;
+  uid: string;
+}
+
 type AuthCallback = (user: UserSession | null) => void;
 const listeners = new Set<AuthCallback>();
 let currentSessionUser: UserSession | null = null;
@@ -82,25 +88,35 @@ export const authService = {
     }
 
     // Local Storage Mock
-    const mockUsers = JSON.parse(localStorage.getItem("bakery_users") || "[]");
+    const mockUsers = JSON.parse(localStorage.getItem("bakery_users") || "[]") as MockUser[];
     const isAdminEmail = email.toLowerCase() === "admin@pasteleria.com";
-    const exists = mockUsers.some((u: any) => u.email.toLowerCase() === email.toLowerCase());
-    
-    if (exists && !isAdminEmail) {
-      throw new Error("El correo electrónico ya está registrado.");
-    }
+    const exists = mockUsers.some((u: MockUser) => u.email.toLowerCase() === email.toLowerCase());
 
     let session: UserSession;
-    if (isAdminEmail && exists) {
-      // If admin exists, log in directly instead of failing registration
-      const existingAdmin = mockUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
-      session = {
-        uid: existingAdmin.uid,
-        email: existingAdmin.email,
-        role: "admin"
-      };
+    if (isAdminEmail) {
+      const existingAdmin = mockUsers.find((u: MockUser) => u.email.toLowerCase() === email.toLowerCase());
+      if (existingAdmin) {
+        // If admin exists, log in directly instead of failing registration
+        session = {
+          uid: existingAdmin.uid,
+          email: existingAdmin.email,
+          role: "admin"
+        };
+      } else {
+        const newUser = { email, password, uid: "mock_admin_1" };
+        mockUsers.push(newUser);
+        localStorage.setItem("bakery_users", JSON.stringify(mockUsers));
+        session = {
+          uid: "mock_admin_1",
+          email,
+          role: "admin"
+        };
+      }
     } else {
-      const uid = isAdminEmail ? "mock_admin_1" : "mock_" + Math.random().toString(36).substr(2, 9);
+      if (exists) {
+        throw new Error("El correo electrónico ya está registrado.");
+      }
+      const uid = "mock_" + Math.random().toString(36).substr(2, 9);
       const newUser = { email, password, uid };
       mockUsers.push(newUser);
       localStorage.setItem("bakery_users", JSON.stringify(mockUsers));
@@ -132,12 +148,12 @@ export const authService = {
     }
 
     // Local Storage Mock
-    const mockUsers = JSON.parse(localStorage.getItem("bakery_users") || "[]");
+    const mockUsers = JSON.parse(localStorage.getItem("bakery_users") || "[]") as MockUser[];
     const isAdminEmail = email.toLowerCase() === "admin@pasteleria.com";
     
-    let foundUser;
+    let foundUser: MockUser | undefined;
     if (isAdminEmail) {
-      foundUser = mockUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
+      foundUser = mockUsers.find((u: MockUser) => u.email.toLowerCase() === email.toLowerCase());
       if (!foundUser) {
         // Create if missing
         foundUser = { email: "admin@pasteleria.com", password, uid: "mock_admin_1" };
@@ -146,7 +162,7 @@ export const authService = {
       }
     } else {
       foundUser = mockUsers.find(
-        (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+        (u: MockUser) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
       );
     }
 

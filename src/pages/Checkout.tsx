@@ -73,9 +73,9 @@ export const Checkout: React.FC = () => {
       const result = await dbService.createOrder(orderPayload);
       setSuccessOrder(result);
       clearCart();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMsg(err.message || "Ocurrió un error al procesar tu pedido.");
+      setErrorMsg(err instanceof Error ? err.message : "Ocurrió un error al procesar tu pedido.");
     } finally {
       setLoading(false);
     }

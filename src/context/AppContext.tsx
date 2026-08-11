@@ -20,8 +20,20 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserSession | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [cart, setCart] = useState<OrderItem[]>([]);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    const savedTheme = localStorage.getItem("bakery_theme") as "light" | "dark";
+    if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+  const [cart, setCart] = useState<OrderItem[]>(() => {
+    const savedCart = localStorage.getItem("bakery_cart");
+    if (!savedCart) return [];
+    try {
+      return JSON.parse(savedCart);
+    } catch {
+      return [];
+    }
+  });
 
   // 1. Sync Authentication
   useEffect(() => {
@@ -32,38 +44,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => unsubscribe();
   }, []);
 
-  // 2. Sync Theme
+  // 2. Sync Theme with DOM
   useEffect(() => {
-    const savedTheme = localStorage.getItem("bakery_theme") as "light" | "dark";
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = prefersDark ? "dark" : "light";
-      setTheme(initialTheme);
-      document.documentElement.setAttribute("data-theme", initialTheme);
-    }
-  }, []);
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
     setTheme(nextTheme);
-    document.documentElement.setAttribute("data-theme", nextTheme);
     localStorage.setItem("bakery_theme", nextTheme);
   };
 
-  // 3. Sync Cart from LocalStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem("bakery_cart");
-    if (savedCart) {
-      try {
-        setCart(JSON.parse(savedCart));
-      } catch {
-        setCart([]);
-      }
-    }
-  }, []);
+  // 3. Cart persistence
 
   const saveCartToStorage = (updatedCart: OrderItem[]) => {
     setCart(updatedCart);
@@ -130,6 +122,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {

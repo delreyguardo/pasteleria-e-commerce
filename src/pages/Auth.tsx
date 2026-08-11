@@ -40,9 +40,9 @@ export const Auth: React.FC = () => {
       } else {
         navigate("/");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMsg(err.message || "Ocurrió un error en la autenticación.");
+      setErrorMsg(err instanceof Error ? err.message : "Ocurrió un error en la autenticación.");
     } finally {
       setLoading(false);
     }

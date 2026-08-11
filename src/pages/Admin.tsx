@@ -334,7 +334,7 @@ export const Admin: React.FC = () => {
                         </label>
                         <select
                           value={ord.status}
-                          onChange={(e) => handleStatusChange(ord.id!, e.target.value as any)}
+                          onChange={(e) => handleStatusChange(ord.id!, e.target.value as Order["status"])}
                           className="form-control"
                           style={{
                             padding: "8px 12px",
@@ -400,7 +400,7 @@ export const Admin: React.FC = () => {
                 <label className="form-label">Categoría *</label>
                 <select
                   value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value as any)}
+                  onChange={(e) => setNewCategory(e.target.value as "budin" | "pastel")}
                   className="form-control"
                 >
                   <option value="budin">Budín</option>

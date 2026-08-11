@@ -57,6 +57,8 @@ Abre [http://localhost:5173](http://localhost:5173).
 | `npm run build` | Build de producción |
 | `npm run preview` | Preview del build local |
 | `npm run lint` | ESLint |
+| `npm test` | Tests con Vitest + Testing Library |
+| `npm run test:watch` | Tests en modo watch |
 
 ---
 

@@ -296,7 +296,8 @@ export const dbService = {
   },
 
   createProduct: async (product: Omit<Product, "id">): Promise<Product> => {
-    const slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+    const normalized = product.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const slug = normalized.replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     const newProduct = {
       ...product,
       id: slug || "prod-" + Math.random().toString(36).substr(2, 9)
