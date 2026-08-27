@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { dbService, formatPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
+import useSEO from "../hooks/useSEO";
 import { Filter, RefreshCw, Search } from "lucide-react";
 
 export const Shop: React.FC = () => {
@@ -12,6 +13,21 @@ export const Shop: React.FC = () => {
   const [sortBy, setSortBy] = useState<"name" | "price-asc" | "price-desc">("name");
   
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    if (products.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % products.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [products]);
+
+  useSEO({
+    title: "Catálogo de Budines - Dulce Margarita",
+    description: "Catálogo de budines artesanales disponibles para compra: budines de limón, carrot cake, chocolate, manzana y banana con chips. Horneado pequeño y familiar.",
+    image: "/images/budin-limon-amapola.webp",
+    type: "website",
+  });
 
   useEffect(() => {
     if (products.length === 0) return;

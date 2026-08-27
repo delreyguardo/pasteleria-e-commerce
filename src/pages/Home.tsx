@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { dbService, formatPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
+import useSEO from "../hooks/useSEO";
 import { ArrowRight, Award, Clock, Heart, PackageCheck, Sparkles, Star } from "lucide-react";
 
 export const Home: React.FC = () => {
@@ -15,6 +16,13 @@ export const Home: React.FC = () => {
 
     fetchFeatured();
   }, []);
+
+  useSEO({
+    title: "Dulce Margarita | Budines Caseros Artesanales",
+    description: "Budines caseros hechos con mucho amor. Recetas familiares, caramelo dorado y el sabor de siempre. Perfectos para acompañar un mate, un café o para regalar.",
+    image: "/images/dulce-margarita-logo.webp",
+    type: "website",
+  });
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: "80px" }}>

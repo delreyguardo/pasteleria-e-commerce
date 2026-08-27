@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { authService } from "../services/authService";
+import useSEO from "../hooks/useSEO";
 import { Cake, LogIn, UserPlus, Info } from "lucide-react";
 
 export const Auth: React.FC = () => {
@@ -8,6 +9,11 @@ export const Auth: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  
+  useSEO({
+    title: "Iniciar Sesión / Registro - Dulce Margarita",
+    description: "Accede a tu cuenta de Dulce Margarita o crea una nueva para gestionar tus pedidos y favoritos.",
+  });
   
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");

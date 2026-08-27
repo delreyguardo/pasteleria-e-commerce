@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
+import useSEO from "../hooks/useSEO";
 import { dbService, formatPrice } from "../services/dbService";
 import type { Order, Product } from "../services/dbService";
 import { Shield, ShoppingBag, Package, RefreshCw, Plus, Minus, DollarSign, Trash2 } from "lucide-react";
@@ -7,6 +8,11 @@ import { Shield, ShoppingBag, Package, RefreshCw, Plus, Minus, DollarSign, Trash
 export const Admin: React.FC = () => {
   const { user } = useApp();
   const [activeTab, setActiveTab] = useState<"orders" | "inventory">("orders");
+  
+  useSEO({
+    title: "Panel de Administración - Dulce Margarita",
+    description: "Panel de control para gestionar pedidos, inventario de productos y estadísticas de la pastelería Dulce Margarita.",
+  });
   
   // State
   const [orders, setOrders] = useState<Order[]>([]);

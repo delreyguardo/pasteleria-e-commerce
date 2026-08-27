@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import useSEO from "../hooks/useSEO";
 import { dbService, getCustomizationPrice, formatPrice } from "../services/dbService";
 import type { Order } from "../services/dbService";
 import { ShoppingBag, CreditCard, ChevronRight, CheckCircle } from "lucide-react";
 
 export const Checkout: React.FC = () => {
   const { user, cart, clearCart } = useApp();
+
+  useSEO({
+    title: "Finalizar Pedido - Dulce Margarita",
+    description: "Completa tu pedido de budines artesanales. Ingresa tus datos de envío, dirección y método de pago para coordinar la entrega.",
+  });
 
   // Form states
   const [customerName, setCustomerName] = useState("");

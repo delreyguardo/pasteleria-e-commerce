@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import useSEO from "../hooks/useSEO";
 import { dbService, formatPrice } from "../services/dbService";
 import type { Order } from "../services/dbService";
 import { Calendar, MapPin, ClipboardList } from "lucide-react";
@@ -9,6 +10,11 @@ export const Orders: React.FC = () => {
   const { user } = useApp();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useSEO({
+    title: "Mis Pedidos - Dulce Margarita",
+    description: "Historial de tus pedidos realizados en Dulce Margarita. Consultá el estado y detalles de cada compra.",
+  });
 
   // Status badge config
   const STATUS_CONFIG = {

@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { dbService, CUSTOMIZATION_OPTIONS, getCustomizationPrice, formatPrice } from "../services/dbService";
 import type { Product } from "../services/dbService";
 import { useApp } from "../context/AppContext";
+import useSEO from "../hooks/useSEO";
 import { ArrowLeft, Check, ShoppingCart, Info, Award } from "lucide-react";
 
 export const ProductDetail: React.FC = () => {
@@ -16,6 +17,13 @@ export const ProductDetail: React.FC = () => {
   const [customizations, setCustomizations] = useState<string[]>([]);
   const [successMsg, setSuccessMsg] = useState(false);
 
+  // Set SEO at top level (must be called at top level, not inside nested functions)
+  useSEO({
+    title: "Dulce Margarita | Productos",
+    description: "Pastelería Dulce Margarita - Budines artesanales",
+    type: "product",
+  });
+
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) return;
@@ -28,6 +36,26 @@ export const ProductDetail: React.FC = () => {
           setSelectedSize(data.sizes[0]);
         } else {
           setSelectedSize("Estándar");
+        }
+        // Update SEO manually when product data is available
+        if (data) {
+          document.title = `${data.name} | Dulce Margarita`;
+          const metaDesc = document.querySelector('meta[name="description"]');
+          if (metaDesc && metaDesc.setAttribute) {
+            metaDesc.setAttribute("content", data.description);
+          }
+          const ogTitle = document.querySelector('meta[property="og:title"]');
+          if (ogTitle && ogTitle.setAttribute) {
+            ogTitle.setAttribute("content", data.name);
+          }
+          const ogDescription = document.querySelector('meta[property="og:description"]');
+          if (ogDescription && ogDescription.setAttribute) {
+            ogDescription.setAttribute("content", data.description);
+          }
+          const ogImage = document.querySelector('meta[property="og:image"]');
+          if (ogImage && ogImage.setAttribute && data.image) {
+            ogImage.setAttribute("content", data.image);
+          }
         }
       }
       setLoading(false);
@@ -55,17 +83,17 @@ export const ProductDetail: React.FC = () => {
   }
 
   const handleCustomizationToggle = (optionName: string) => {
-    setCustomizations(prev => 
+    setCustomizations(prev =>
       prev.includes(optionName)
         ? prev.filter(c => c !== optionName)
         : [...prev, optionName]
     );
   };
 
-  const currentPrice = product.price + getCustomizationPrice(customizations);
+  const currentPrice = product!.price + getCustomizationPrice(customizations);
 
   const handleAddToCart = () => {
-    addToCart(product, selectedSize, customizations);
+    addToCart(product!, selectedSize, customizations);
     setSuccessMsg(true);
     setTimeout(() => {
       setSuccessMsg(false);
@@ -106,8 +134,8 @@ export const ProductDetail: React.FC = () => {
             boxShadow: "var(--shadow-md)"
           }}>
             <img 
-              src={product.image} 
-              alt={product.name} 
+              src={product!.image} 
+              alt={product!.name} 
               style={{ width: "100%", height: "100%", objectFit: "cover" }} 
             />
             <span className="badge badge-caramel" style={{
@@ -117,7 +145,7 @@ export const ProductDetail: React.FC = () => {
               fontSize: "0.85rem",
               padding: "6px 16px"
             }}>
-              {product.category === "budin" ? "Tradicional Budín de Pan" : "Gourmet Pastel"}
+              {product!.category === "budin" ? "Tradicional Budín de Pan" : "Gourmet Pastel"}
             </span>
           </div>
 
@@ -128,7 +156,7 @@ export const ProductDetail: React.FC = () => {
               Ingredientes Seleccionados
             </h4>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {product.ingredients.map((ing, i) => (
+              {product!.ingredients.map((ing, i) => (
                 <span key={i} className="badge" style={{
                   backgroundColor: "var(--bg-primary)",
                   border: "1px solid var(--border-color)",
@@ -147,7 +175,7 @@ export const ProductDetail: React.FC = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
           <div>
             <h1 className="heading-serif text-gradient" style={{ fontSize: "2.6rem", lineHeight: "1.2", marginBottom: "12px" }}>
-              {product.name}
+              {product!.name}
             </h1>
             <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--accent-caramel)", fontSize: "0.9rem", fontWeight: 600 }}>
               <Award size={16} />
@@ -156,19 +184,19 @@ export const ProductDetail: React.FC = () => {
           </div>
 
           <p style={{ color: "var(--text-secondary)", fontSize: "1.05rem" }}>
-            {product.description}
+            {product!.description}
           </p>
 
           <div style={{ height: "1px", backgroundColor: "var(--border-color)" }} />
 
           {/* Configuration: Size */}
-          {product.sizes && product.sizes.length > 1 && (
+          {product!.sizes && product!.sizes.length > 1 && (
             <div>
               <h4 style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "12px", color: "var(--text-secondary)" }}>
                 Selecciona el Tamaño:
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {product.sizes.map((size) => (
+                {product!.sizes.map((size) => (
                   <label 
                     key={size} 
                     className="glass flex-center"
@@ -253,7 +281,7 @@ export const ProductDetail: React.FC = () => {
               </span>
             </div>
 
-            {product.stock === 0 ? (
+            {product!.stock === 0 ? (
               <button disabled className="btn" style={{
                 backgroundColor: "var(--border-color)",
                 color: "var(--text-muted)",
@@ -288,7 +316,6 @@ export const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

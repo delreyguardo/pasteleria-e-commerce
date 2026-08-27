@@ -1,11 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import useSEO from "../hooks/useSEO";
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
 import { getCustomizationPrice, formatPrice } from "../services/dbService";
 
 export const Cart: React.FC = () => {
   const { cart, removeFromCart, updateCartQuantity } = useApp();
+
+  useSEO({
+    title: "Carrito de Compras - Dulce Margarita",
+    description: "Resumen de tu carrito de compras de budines artesanales. Revisa los productos, cantidades y total antes de finalizar el pedido.",
+  });
 
   const getItemPrice = (item: typeof cart[0]) => {
     return item.product.price + getCustomizationPrice(item.selectedCustomizations);
